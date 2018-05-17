@@ -1,12 +1,21 @@
 package com.example.acer_ssd.whattoeat;
 
+import android.app.Dialog;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.support.v4.view.GestureDetectorCompat;
+import android.support.v4.view.ScaleGestureDetectorCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
@@ -23,19 +32,50 @@ public class recommendation_list extends AppCompatActivity {
     SQLiteDatabase db;
     Cursor userCursor;
     SimpleCursorAdapter userAdapter;
-
+    Dialog myDialog;
     String food, food2, food3, food4, food5, food6, food7, food8, food9;
 
+    private GestureDetectorCompat gestureObject;
+
+
+    float historicX = Float.NaN, historicY = Float.NaN;
+    static final int DELTA = 50;
+    enum Direction {LEFT, RIGHT;}
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recommendation_list);
         userList = (ListView)findViewById(R.id.listview);
 
+
+        userList.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event)
+            {
+                // TODO Auto-generated method stub
+                switch (event.getAction())
+                {
+                    case MotionEvent.ACTION_DOWN:
+                        historicX = event.getX();
+                        historicY = event.getY();
+                        break;
+
+                    case MotionEvent.ACTION_UP:
+                        if (event.getX() - historicX < -DELTA)
+                        {
+                            onResume();
+                            return true;
+                        }
+
+                    default: return false;
+                }
+                return false;
+            }
+        });
         databaseHelper = new DatabaseHelper(getApplicationContext());
         // создаем базу данных
         databaseHelper.create_db();
-
+        myDialog = new Dialog(this);
     }
 
     @Override
@@ -44,8 +84,8 @@ public class recommendation_list extends AppCompatActivity {
 
 
         final Random random = new Random();
-        TextView textView = (TextView) findViewById(R.id.textView6);
-        TextView textView2 = (TextView) findViewById(R.id.textView7);
+        /*TextView textView = (TextView) findViewById(R.id.textView6);
+        TextView textView2 = (TextView) findViewById(R.id.textView7);*/
 
         Boolean chicken = getIntent().getExtras().getBoolean("checkBox");
         Boolean soup = getIntent().getExtras().getBoolean("checkBox2");
@@ -92,7 +132,7 @@ public class recommendation_list extends AppCompatActivity {
         }
         if (soup){
             food2 = soupArray[h];
-            textView2.setText(food2);
+            //textView2.setText(food2);
         }
         if (rice){
             food3 = riceArray[l];
@@ -130,28 +170,50 @@ public class recommendation_list extends AppCompatActivity {
         userCursor =  db.rawQuery("select * from "+ DatabaseHelper.TABLE + " where "+DatabaseHelper.COLUMN_NAME+ " in ("+food+","+food2+","+food3+","+food4+","+food5+","+food6+","+food7+","+food8+","+food9+")", null);
         //userCursor =  db.rawQuery("select * from "+ DatabaseHelper.TABLE, null);
         // определяем, какие столбцы из курсора будут выводиться в ListView
-        String[] headers = new String[] {DatabaseHelper.COLUMN_FULL_NAME, DatabaseHelper.COLUMN_PRICE};
+        final String[] headers = new String[] {DatabaseHelper.COLUMN_FULL_NAME, DatabaseHelper.COLUMN_IMAGE, DatabaseHelper.COLUMN_PRICE};
         // создаем адаптер, передаем в него курсор
         userList.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
-        userAdapter = new SimpleCursorAdapter(this, android.R.layout.simple_list_item_multiple_choice,
-                userCursor, headers, new int[]{android.R.id.text1, android.R.id.text2}, 0);
+        userAdapter = new SimpleCursorAdapter(this, R.layout.custom_list,
+                userCursor, headers, new int[]{R.id.text1, R.id.text2, R.id.text3}, 0);
         userList.setAdapter(userAdapter);
+
     }
 
-    // по нажатию на кнопку запускаем UserActivity для добавления данных
-    /*public void add(View view){
-        Intent intent = new Intent(this, UserActivity.class);
-        startActivity(intent);
-    }*/
 
+
+
+
+    public void ShowPopupPayRec(View v) {
+        TextView txtclose;
+        ImageButton imgbutton;
+        Button btnOrder;
+        myDialog.setContentView(R.layout.custompopup_pay);
+        txtclose =(TextView) myDialog.findViewById(R.id.txtclose);
+        txtclose.setText("Close");
+        btnOrder = (Button) myDialog.findViewById(R.id.btnOrder);
+        txtclose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                myDialog.dismiss();
+            }
+        });
+        myDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        myDialog.show();
+    }
     public void OnUpdateList(View view){
         onResume();
     }
+
     @Override
     public void onDestroy(){
         super.onDestroy();
         // Закрываем подключение и курсор
         db.close();
         userCursor.close();
+    }
+    @Override
+    public void finish() {
+        super.finish();
+        overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
     }
 }

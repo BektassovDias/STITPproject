@@ -16,7 +16,7 @@ import java.sql.SQLException;
 public class editDBhelper extends SQLiteOpenHelper{
 
     private static String DB_PATH = "/data/data/com.example.acer_ssd.whattoeat/databases/";
-    private static String DB_NAME = "restaurant_database.db";
+    private static String DB_NAME = "test2.db";
     private static final int SCHEMA = 1; // версия базы данных
     static final String TABLE = "menu";
 

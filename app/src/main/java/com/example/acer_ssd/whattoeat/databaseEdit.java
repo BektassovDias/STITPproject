@@ -5,6 +5,7 @@ package com.example.acer_ssd.whattoeat;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -29,6 +30,18 @@ public class databaseEdit extends AppCompatActivity {
         setContentView(R.layout.activity_database_edit);
         userList2 = (ListView)findViewById(R.id.listview2);
 
+
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // Click action
+                Intent intent = new Intent(getApplicationContext(), UserActivity.class);
+                startActivity(intent);
+            }
+        });
+
+
         userList2.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -45,6 +58,8 @@ public class databaseEdit extends AppCompatActivity {
 
 
     }
+
+
     @Override
     public void onResume() {
         super.onResume();
@@ -55,10 +70,10 @@ public class databaseEdit extends AppCompatActivity {
             //получаем данные из бд в виде курсора
             userCursor2 =  sqlHelper.database.rawQuery("select * from "+ editDBhelper.TABLE, null);
             // определяем, какие столбцы из курсора будут выводиться в ListView
-            String[] headers2 = new String[] {editDBhelper.COLUMN_FULL_NAME, editDBhelper.COLUMN_PRICE};
+            String[] headers2 = new String[] {editDBhelper.COLUMN_FULL_NAME,editDBhelper.COLUMN_IMAGE, editDBhelper.COLUMN_PRICE};
             // создаем адаптер, передаем в него курсор
-            userAdapter2 = new SimpleCursorAdapter(this, android.R.layout.two_line_list_item,
-                    userCursor2, headers2, new int[]{android.R.id.text1, android.R.id.text2}, 0);
+            userAdapter2 = new SimpleCursorAdapter(this, R.layout.custom_list2,
+                    userCursor2, headers2, new int[]{R.id.text1, R.id.text2, R.id.text3}, 0);
             userList2.setAdapter(userAdapter2);
         }
         catch (SQLException ex){}
@@ -89,5 +104,10 @@ public class databaseEdit extends AppCompatActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+    @Override
+    public void finish() {
+        super.finish();
+        overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
     }
 }

@@ -2,6 +2,13 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.acer_ssd.whattoeat">
 
+    <permission android:name="android.permission.BAIDU_LOCATION_SERVICE"></permission>
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.BAIDU_LOCATION_SERVICE" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -18,7 +25,9 @@
         </activity>
         <activity android:name=".recommendation_list" />
         <activity android:name=".databaseEdit" />
-        <activity android:name=".UserActivity"></activity>
+        <activity android:name=".UserActivity" />
+        <activity android:name=".MapActivity" />
+        <activity android:name=".About"></activity>
     </application>
 
 </manifest>

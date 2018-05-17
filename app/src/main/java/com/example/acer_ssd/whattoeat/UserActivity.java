@@ -41,9 +41,9 @@ public class UserActivity extends AppCompatActivity {
 
         EditText nameBox;
         EditText price;
+        EditText content;
         Button delButton;
         Button saveButton;
-
         editDBhelper sqlHelper;
         Cursor userCursor;
 
@@ -71,6 +71,8 @@ public class UserActivity extends AppCompatActivity {
             View rootView = inflater.inflate(R.layout.fragment_user, container, false);
             nameBox = (EditText) rootView.findViewById(R.id.name);
             price = (EditText) rootView.findViewById(R.id.price);
+            content = (EditText) rootView.findViewById(R.id.content);
+
             delButton = (Button) rootView.findViewById(R.id.delete);
             saveButton = (Button) rootView.findViewById(R.id.save);
 
@@ -100,7 +102,7 @@ public class UserActivity extends AppCompatActivity {
                         cv.put(editDBhelper.COLUMN_PRICE, price.getText().toString());
                         cv.put(editDBhelper.COLUMN_NAME, price.getText().toString());
                         cv.put(editDBhelper.COLUMN_TYPE, price.getText().toString());
-                        cv.put(editDBhelper.COLUMN_IMAGE, price.getText().toString());
+                        cv.put(editDBhelper.COLUMN_IMAGE, content.getText().toString());
 
                         if (id > 0) {
                             sqlHelper.database.update(editDBhelper.TABLE, cv,
@@ -121,6 +123,7 @@ public class UserActivity extends AppCompatActivity {
                     nameBox.setText(userCursor.getString(3));
                     //yearBox.setText(String.valueOf(userCursor.getInt(2)));
                     price.setText (userCursor.getString(4));
+                    content.setText (userCursor.getString(5));
                     userCursor.close();
                 } else {
                     // скрываем кнопку удаления
